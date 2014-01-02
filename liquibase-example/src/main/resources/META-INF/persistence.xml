@@ -1,0 +1,11 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+
+	<persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
+		<properties>
+	        <property name="hibernate.cache.use_query_cache" value="false"/>
+	        <property name="hibernate.cache.use_second_level_cache" value="false"/>
+	        <!-- <property name="hibernate.hbm2ddl.auto" value="create"/> -->
+	    </properties>
+	</persistence-unit>
+
+</persistence>
