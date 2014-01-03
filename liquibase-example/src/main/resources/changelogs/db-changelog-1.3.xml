@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+    logicalFilePath="changelogs/db-changelog-1.3.xml">
+
+	<changeSet id="insert-weather-products" author="milltree">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT count(*) FROM productgroup WHERE name='Weather'</sqlCheck>
+		</preConditions>
+		<comment>Creates the new product group "Weather".</comment>
+		<sqlFile encoding="utf8" relativeToChangelogFile="true" path="sqlfiles/weather.sql" />
+		<rollback>
+			<sqlFile encoding="utf8" relativeToChangelogFile="true" path="sqlfiles/weather_rollback.sql" />
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="rename-campaign-validUntil-column" author="milltree">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="campaign" columnName="validUntil" />
+		</preConditions>
+		<comment>Renames the column "validUntil" of table "campaign" into "validTo".</comment>
+		<renameColumn tableName="campaign" columnDataType="date" oldColumnName="validUntil" newColumnName="validTo" />
+	</changeSet>
+	
+	<changeSet id="tag-1.3" author="milltree">
+		<tagDatabase tag="1.3" />
+	</changeSet>
+
+</databaseChangeLog>

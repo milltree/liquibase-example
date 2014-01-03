@@ -15,10 +15,13 @@ import javax.persistence.UniqueConstraint;
 		"productGroup_id" }) })
 @NamedQueries({
 		@NamedQuery(name = Product.FIND_BY_NAME, query = "SELECT p FROM Product p WHERE p.name = :name"),
+		@NamedQuery(name = Product.FIND_BY_GROUP, query = "SELECT p FROM Product p WHERE p.productGroup = :group"),
 		@NamedQuery(name = Product.FIND_ALL, query = "SELECT p FROM Product p") })
 public class Product {
 
 	public static final String FIND_BY_NAME = "findProductByName";
+
+	public static final String FIND_BY_GROUP = "findProductByGroup";
 	
 	public static final String FIND_ALL = "findAllProducts";
 

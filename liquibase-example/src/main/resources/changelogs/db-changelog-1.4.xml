@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+    logicalFilePath="changelogs/db-changelog-1.4.xml">
+
+	<changeSet id="insert-snow-discount" author="milltree" context="test">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT count(*) FROM discount WHERE product_id = (SELECT p.id FROM product p WHERE p.name = 'Snow')</sqlCheck>
+		</preConditions>
+		<comment>Creates a discount of 3 for product "Snow".</comment>
+		<insert tableName="discount">
+			<column name="product_id" valueComputed="(SELECT id FROM product WHERE name='Snow')"/>
+			<column name="reductionAmount" valueNumeric="3.0" />
+		</insert>
+		<rollback>
+			<delete tableName="discount">
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Snow')</where>
+			</delete>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="insert-snow-campaign" author="milltree" context="test">
+		<preConditions>
+			<sqlCheck expectedResult="1">SELECT count(*) FROM discount WHERE product_id = (SELECT p.id FROM product p WHERE p.name = 'Snow')</sqlCheck>
+		</preConditions>
+		<comment>Creates a campaign for product "Snow".</comment>
+		<insert tableName="campaign">
+			<column name="product_id" valueComputed="(SELECT p.id FROM product p WHERE p.name = 'Snow')"/>
+			<column name="discount_id" valueComputed="(SELECT d.id FROM discount d WHERE d.product_id = (SELECT p.id FROM product p WHERE p.name = 'Snow'))"/>
+			<column name="validFrom" valueDate="2014-06-01" />
+			<column name="validTo" valueDate="2014-06-15" />
+			<column name="label" value="Test-Aktion" />
+		</insert>
+		<rollback>
+			<delete tableName="campaign">
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Snow') AND discount_id = (SELECT d.id FROM discount d WHERE d.product_id = (SELECT p.id FROM product p WHERE p.name = 'Snow')) and validFrom = '2014-06-01' and validTo = '2014-06-15'</where>
+			</delete>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="tag-1.4" author="milltree">
+		<tagDatabase tag="1.4" />
+	</changeSet>
+
+</databaseChangeLog>

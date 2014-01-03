@@ -14,8 +14,13 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = "name")})
-@NamedQueries({ @NamedQuery(name = ProductGroup.FIND_ALL, query = "SELECT g FROM ProductGroup g") })
+@NamedQueries({ 
+		@NamedQuery(name = ProductGroup.FIND_BY_NAME, query = "SELECT g FROM ProductGroup g WHERE g.name = :name"),
+		@NamedQuery(name = ProductGroup.FIND_ALL, query = "SELECT g FROM ProductGroup g")
+})
 public class ProductGroup {
+	
+	public static final String FIND_BY_NAME = "findGroupByName";
 	
 	public static final String FIND_ALL = "findAllGroups";
 	

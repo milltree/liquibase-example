@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.milltree.liquibaseexample.entity.Discount;
 
+/**
+ * Management service for discounts.
+ */
 @Component
 public class DiscountService {
 

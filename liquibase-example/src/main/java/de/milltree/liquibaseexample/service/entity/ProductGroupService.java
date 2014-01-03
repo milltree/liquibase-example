@@ -4,12 +4,18 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.milltree.liquibaseexample.entity.ProductGroup;
 
+
+/**
+ * Management service for product groups.
+ */
 @Component
 public class ProductGroupService {
 
@@ -38,6 +44,18 @@ public class ProductGroupService {
 	@Transactional(readOnly = true)
 	public ProductGroup findById(Long id) {
 		return entityManager.find(ProductGroup.class, id);
+	}
+
+	@Transactional(readOnly = true)
+	public ProductGroup findByName(String name) {
+		try {
+			Query query = entityManager
+					.createNamedQuery(ProductGroup.FIND_BY_NAME);
+			query.setParameter("name", name);
+			return (ProductGroup) query.getSingleResult();
+		} catch (EntityNotFoundException enfe) {
+			return null;
+		}
 	}
 
 }

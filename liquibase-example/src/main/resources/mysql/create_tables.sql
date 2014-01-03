@@ -1,7 +1,11 @@
 DROP TABLE IF EXISTS `stockentry`;
+DROP TABLE IF EXISTS `campaign`;
 DROP TABLE IF EXISTS `discount`;
 DROP TABLE IF EXISTS `product`;
 DROP TABLE IF EXISTS `productgroup`;
+
+DROP TABLE IF EXISTS `databasechangelog`;
+DROP TABLE IF EXISTS `databasechangeloglock`;
 
 CREATE TABLE `productgroup` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -40,3 +44,5 @@ CREATE TABLE `stockentry` (
   KEY `FK9D13FB1C4EA02205` (`product_id`),
   CONSTRAINT `FK9D13FB1C4EA02205` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+

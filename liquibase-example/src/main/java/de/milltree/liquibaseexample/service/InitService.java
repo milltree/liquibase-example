@@ -13,6 +13,9 @@ import de.milltree.liquibaseexample.service.entity.ProductGroupService;
 import de.milltree.liquibaseexample.service.entity.ProductService;
 import de.milltree.liquibaseexample.service.entity.StockEntryService;
 
+/**
+ * Service for clearing the stock and inserting the initial product data.
+ */
 @Component
 public class InitService {
 	

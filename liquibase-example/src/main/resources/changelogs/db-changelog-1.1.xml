@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+    logicalFilePath="changelogs/db-changelog-1.1.xml">
+	
+	<changeSet id="tag-1.0" author="milltree">
+		<tagDatabase tag="1.0" />
+	</changeSet>
+
+	<changeSet id="create-campaign-table" author="milltree">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="campaign" />
+			</not>
+		</preConditions>
+		<comment>Creates the new "campaign" table.</comment>
+		<createTable tableName="campaign">
+			<column name="id" type="bigint(20)" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="product_id" type="bigint(20)">
+				<constraints references="product(id)" foreignKeyName="fk_campaign_product" nullable="false" />
+			</column>
+			<column name="discount_id" type="bigint(20)">
+				<constraints references="discount(id)" foreignKeyName="fk_campaign_discount" nullable="false" />
+			</column>
+			<column name="validFrom" type="date">
+				<constraints nullable="false" />
+			</column>
+			<column name="validUntil" type="date">
+				<constraints nullable="true" />
+			</column>
+		</createTable>
+	</changeSet>
+	
+	<changeSet id="insert-first-campaign" author="milltree">
+		<preConditions>
+			<tableExists tableName="campaign" />
+		</preConditions>
+		<comment>Inserts a campaign for product "Green".</comment>
+		<insert tableName="campaign">
+			<column name="product_id" valueComputed="(SELECT p.id FROM product p WHERE p.name = 'Green')"/>
+			<column name="discount_id" valueComputed="(SELECT d.id FROM discount d WHERE d.product_id = (SELECT p.id FROM product p WHERE p.name = 'Green'))"/>
+			<column name="validFrom" valueDate="2014-04-01" />
+			<column name="validUntil" valueDate="2014-06-30" />
+		</insert>
+		<rollback>
+			<delete tableName="campaign">
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Green') AND discount_id = (SELECT d.id FROM discount d WHERE d.product_id = (SELECT p.id FROM product p WHERE p.name = 'Green')) and validFrom = '2014-04-01' and validUntil = '2014-06-30'</where>
+			</delete>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="tag-1.1" author="milltree">
+		<tagDatabase tag="1.1" />
+	</changeSet>
+
+</databaseChangeLog>

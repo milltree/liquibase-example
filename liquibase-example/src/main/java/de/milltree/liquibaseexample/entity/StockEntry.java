@@ -12,8 +12,13 @@ import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"product_id", "amount"})})
-@NamedQueries({ @NamedQuery(name = StockEntry.FIND_ALL, query = "SELECT s FROM StockEntry s") })
+@NamedQueries({ 
+	@NamedQuery(name = StockEntry.FIND_BY_PRODUCTS, query = "SELECT s FROM StockEntry s WHERE s.product IN (:products)"),
+	@NamedQuery(name = StockEntry.FIND_ALL, query = "SELECT s FROM StockEntry s") 
+})
 public class StockEntry {
+	
+	public static final String FIND_BY_PRODUCTS = "findStockEntriesByProducts";
 	
 	public static final String FIND_ALL = "findAllStockEntries";
 	

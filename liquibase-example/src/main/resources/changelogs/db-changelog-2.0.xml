@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+    logicalFilePath="changelogs/db-changelog-2.0.xml">
+
+	<changeSet id="drop-campaign-label" author="milltree">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="campaign" columnName="label" />
+		</preConditions>
+		<comment>Drops the column "label" on table "".</comment>
+		<dropColumn tableName="campaign" columnName="label" />
+		<rollback>
+			<addColumn tableName="campaign">
+				<column name="label" type="varchar(255)" />
+			</addColumn>
+			<update tableName="campaign">
+				<column name="label" value="Aktuelle Aktion!" />
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Green') AND discount_id = (SELECT d.id FROM discount d WHERE d.product_id = (SELECT p.id FROM product p WHERE p.name = 'Green')) and validFrom = '2014-04-01' and validTo = '2014-06-30'</where>
+			</update>
+			<update tableName="campaign">
+				<column name="label" value="Test-Aktion" />
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Snow') AND discount_id = (SELECT d.id FROM discount d WHERE d.product_id = (SELECT p.id FROM product p WHERE p.name = 'Green')) and validFrom = '2014-06-01' and validTo = '2014-06-15'</where>
+			</update>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="update-colours-stock" author="milltree">
+		<comment>Changes the stock entries of all "Weather" products to the amount 8.</comment>
+		<customChange class="de.milltree.liquibaseexample.extensions.UpdateGroupStock">
+			<param name="productGroupName" value="Colours" />
+			<param name="newStockAmount" value="8" />
+		</customChange>
+		<rollback>
+			<update tableName="stockentry">
+				<column name="amount" valueNumeric="0" />
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Yellow')</where>
+			</update>
+			<update tableName="stockentry">
+				<column name="amount" valueNumeric="5" />
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Green')</where>
+			</update>
+			<update tableName="stockentry">
+				<column name="amount" valueNumeric="4" />
+				<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Blue')</where>
+			</update>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="print-hello-world" author="milltree">
+		<comment>Prints a "Hello world!" text.</comment>
+		<customChange class="de.milltree.liquibaseexample.extensions.PrintText">
+			<param name="text" value="Hello world!" />
+		</customChange>
+	</changeSet>
+	
+	<changeSet id="tag-2.0" author="milltree">
+		<tagDatabase tag="2.0" />
+	</changeSet>
+
+</databaseChangeLog>

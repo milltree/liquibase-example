@@ -6,14 +6,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import de.milltree.liquibaseexample.service.InitService;
 
 /**
- * Initialize the stock with some product data.
+ * Inserts the initial product data into the stock.
  */
 public class InitMain {
 
 	private static ApplicationContext context;
 
 	public static void main(String[] args) {
-		context = new ClassPathXmlApplicationContext("spring/spring.xml");
+		context = new ClassPathXmlApplicationContext("spring/spring-init.xml");
 
 		InitService initService = context.getBean(InitService.class);
 		initService.initStock();

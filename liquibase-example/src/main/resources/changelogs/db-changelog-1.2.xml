@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+    logicalFilePath="changelogs/db-changelog-1.2.xml">
+
+	<changeSet id="add-campaign-label-column" author="milltree">
+		<preConditions>
+			<tableExists tableName="campaign" />
+		</preConditions>
+		<comment>Adds the column "label" to the table "campaign".</comment>
+		<addColumn tableName="campaign">
+			<column name="label" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="set-initial-campaign-labels" author="milltree">
+		<preConditions>
+			<columnExists tableName="campaign" columnName="label" />
+		</preConditions>
+		<comment>Sets the label "Aktuelle Aktion!" for all existing campaigns.</comment>
+		<update tableName="campaign">
+			<column name="label" value="Aktuelle Aktion!" />
+			<where>label IS NULL</where>
+		</update>
+		<rollback>
+			<update tableName="campaign">
+				<column name="label" />
+				<where>label = 'Aktuelle Aktion!'</where>
+			</update>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="update-yellow-price" author="milltree">
+		<preConditions>
+			<sqlCheck expectedResult="10">SELECT price FROM product WHERE name = 'Yellow'</sqlCheck>
+		</preConditions>
+		<comment>Changes the price of product "Yellow" from 10 to 12.</comment>
+		<update tableName="product">
+			<column name="price" valueNumeric="12.0" />
+			<where>name = 'Yellow'</where>
+		</update>
+		<rollback>
+			<update tableName="product">
+				<column name="price" valueNumeric="10.0" />
+				<where>name = 'Yellow'</where>
+			</update>
+		</rollback>
+	</changeSet>
+
+	<changeSet id="delete-italy-discount" author="milltree">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">SELECT count(*) FROM discount WHERE product_id = (SELECT p.id FROM product p WHERE p.name = 'Italy')</sqlCheck>
+			<sqlCheck expectedResult="9">SELECT reductionAmount FROM discount WHERE product_id = (SELECT p.id FROM product p WHERE p.name = 'Italy')</sqlCheck>
+		</preConditions>
+		<comment>Deletes the discount for product "Italy".</comment>
+		<delete tableName="discount">
+			<where>product_id = (SELECT p.id FROM product p WHERE p.name = 'Italy')</where>
+		</delete>
+		<rollback>
+			<insert tableName="discount">
+				<column name="product_id" valueComputed="(SELECT p.id FROM product p WHERE p.name = 'Italy')" />
+				<column name="reductionAmount" valueNumeric="9.0" />
+			</insert>
+		</rollback>
+	</changeSet>
+	
+	<changeSet id="tag-1.2" author="milltree">
+		<tagDatabase tag="1.2" />
+	</changeSet>
+
+</databaseChangeLog>

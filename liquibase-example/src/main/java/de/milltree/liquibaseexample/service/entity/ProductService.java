@@ -11,7 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.milltree.liquibaseexample.entity.Product;
+import de.milltree.liquibaseexample.entity.ProductGroup;
 
+/**
+ * Management service for products.
+ */
 @Component
 public class ProductService {
 
@@ -51,5 +55,13 @@ public class ProductService {
 		} catch (EntityNotFoundException enfe) {
 			return null;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
+	public Collection<Product> findByGroup(ProductGroup group) {
+		Query query = entityManager.createNamedQuery(Product.FIND_BY_GROUP);
+		query.setParameter("group", group);
+		return query.getResultList();
 	}
 }
